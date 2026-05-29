@@ -1,0 +1,170 @@
+---
+title: Get started
+pcx_content_type: get-started
+description: Set up Web Search and run your first query using a Workers binding or the REST API.
+sidebar:
+  order: 2
+  badge: Beta
+head:
+  - tag: title
+    content: Get started with Web Search
+---
+
+import { PackageManagers, TypeScriptExample, WranglerConfig, Tabs, TabItem, Steps } from "~/components";
+
+This guide walks you through setting up Web Search and running your first query using a Workers binding or the REST API.
+
+## Prerequisites
+
+You need a [Cloudflare account](https://dash.cloudflare.com/sign-up) and a Workers project. If you do not have a project yet, create one:
+
+<PackageManagers type="create" pkg="cloudflare@latest" args="web-search-demo" />
+
+## Set up Web Search
+
+<Tabs syncKey="accessMethod">
+
+<TabItem label="Workers binding">
+
+<Steps>
+
+1. Add the `web_search` binding to your Wrangler configuration:
+
+	<WranglerConfig>
+
+	```toml
+	name = "web-search-demo"
+	main = "src/index.ts"
+	compatibility_date = "$today"
+
+	[web_search]
+	binding = "WEBSEARCH"
+	```
+
+	</WranglerConfig>
+
+2. Use the binding in your Worker to search the web:
+
+	<TypeScriptExample>
+
+	```ts
+	export default {
+		async fetch(request, env): Promise<Response> {
+			const { results, metadata } = await env.WEBSEARCH.search({
+				query: "latest news on Workers AI",
+				limit: 20,
+			});
+
+			return Response.json({
+				results: results.map((r) => ({
+					title: r.title,
+					url: r.url,
+					description: r.description,
+				})),
+				metadata,
+			});
+		},
+	} satisfies ExportedHandler<Env>;
+	```
+
+	</TypeScriptExample>
+
+3. Run your Worker locally to test:
+
+	<PackageManagers type="exec" pkg="wrangler" args="dev" />
+
+</Steps>
+
+</TabItem>
+
+<TabItem label="REST API">
+
+Send a `POST` request to the Web Search endpoint:
+
+```bash
+curl -X POST "https://api.cloudflare.com/client/v4/accounts/{account_id}/websearch/search" \
+  -H "Authorization: Bearer {api_token}" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "query": "latest news on Workers AI",
+    "limit": 20
+  }'
+```
+
+Your API token must have the **Web Search Read** permission. You can create one in the [Cloudflare dashboard](https://dash.cloudflare.com/profile/api-tokens).
+
+</TabItem>
+
+</Tabs>
+
+## Request parameters
+
+| Parameter | Type | Required | Description |
+| --- | --- | --- | --- |
+| `query` | `string` | Yes | The search query. |
+| `limit` | `number` | No | Maximum number of results to return. Default `10`, max `20`. |
+
+## Response
+
+The binding returns a `SearchResponse` object with results and metadata:
+
+```json
+{
+  "results": [
+    {
+      "url": "https://blog.cloudflare.com/workers-ai-update/",
+      "title": "Workers AI Update - The Cloudflare Blog",
+      "description": "The latest updates to Workers AI, including new models and features."
+    }
+  ],
+  "metadata": {
+    "query": "latest news on Workers AI",
+    "requestId": "01H...",
+    "latencyMs": 142
+  }
+}
+```
+
+The REST API wraps this in the standard Cloudflare v4 response envelope:
+
+```json
+{
+  "success": true,
+  "errors": [],
+  "messages": [],
+  "result": {
+    "results": [
+      {
+        "url": "https://blog.cloudflare.com/workers-ai-update/",
+        "title": "Workers AI Update - The Cloudflare Blog",
+        "description": "The latest updates to Workers AI, including new models and features."
+      }
+    ],
+    "metadata": {
+      "query": "latest news on Workers AI",
+      "request_id": "01H...",
+      "latency_ms": 142
+    }
+  }
+}
+```
+
+Note: The binding uses camelCase (`requestId`, `latencyMs`) while the REST API uses snake_case (`request_id`, `latency_ms`).
+```
+
+### Result fields
+
+| Field | Type | Always present | Description |
+| --- | --- | --- | --- |
+| `url` | `string` | Yes | The canonical URL of the page. |
+| `title` | `string` | Yes | The page title. |
+| `description` | `string` | No | Page-level description, usually from the page's meta description tag. |
+| `summary` | `string` | No | A summary of the page contents, if available. |
+| `thumbnailUrl` | `string` | No | Preview image URL, if the page has an OpenGraph image. |
+| `faviconUrl` | `string` | No | Favicon URL for the page's domain. |
+
+## Next steps
+
+- Browse [examples](/web-search/examples/) showing Web Search paired with Browser Run
+- Set up Web Search as a [tool in the AI SDK](/web-search/ai-integration/ai-sdk/) or [Agents SDK](/web-search/ai-integration/agents-sdk/)
+- Connect via [MCP](/web-search/mcp-server/) from Claude Code, Cursor, or OpenCode

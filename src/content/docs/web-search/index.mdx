@@ -1,0 +1,158 @@
+---
+title: Web Search
+pcx_content_type: overview
+description: Give your agents real-time access to the web with Cloudflare Web Search. A managed search API that returns URLs and metadata for any query.
+sidebar:
+  order: 1
+  badge: Beta
+products:
+  - web-search
+head:
+  - tag: title
+    content: Cloudflare Web Search
+tags:
+  - AI
+---
+
+import {
+	CardGrid,
+	Description,
+	Feature,
+	LinkTitleCard,
+	Plan,
+	RelatedProduct,
+} from "~/components";
+
+<Description>
+
+Give your agents real-time access to the web.
+
+</Description>
+
+<Plan type="workers-all" />
+
+:::note
+Cloudflare Web Search is currently in beta. Features and APIs may change before general availability.
+:::
+
+Web Search is a managed search API that returns URLs and metadata for any query. Use it from a Workers binding, the REST API, or any MCP client. No instances to create, no namespaces to configure.
+
+Web Search is a discovery tool. It finds relevant URLs on the public web so your agents can decide which pages to read. To get the content of a page, pair Web Search with [Browser Run](/browser-run/) or the standard `fetch()` API.
+
+## Use cases
+
+- **AI agents that need real-time information**: give agents the ability to search the web as a tool call, then fetch and act on the results
+- **Grounding LLM responses**: reduce hallucinations by searching for current information before generating a response
+- **Multi-step research**: search across queries, fetch content from the best results with [Browser Run](/browser-run/), and synthesize across multiple sources
+- **MCP tool for coding assistants**: use Web Search from Claude Code, Cursor, OpenCode, or any MCP client
+
+## Key features
+
+<Feature header="Zero-setup" href="/web-search/get-started/">
+
+No instances to create, no namespaces to configure. Add one line to your config and start searching.
+
+</Feature>
+
+<Feature header="Composable" href="/web-search/examples/">
+
+Returns URLs and metadata. Pair with [Browser Run](/browser-run/) to fetch full content, extract structured data, or take screenshots of any result.
+
+</Feature>
+
+<Feature header="Agent-ready" href="/web-search/ai-integration/">
+
+Drop-in tools for the AI SDK, Agents SDK, and MCP. Works out of the box with popular AI frameworks.
+
+</Feature>
+
+---
+
+## Web Search vs AI Search
+
+Web Search and [AI Search](/ai-search/) are different products for different jobs:
+
+- **Web Search** discovers URLs on the **public web**. You provide a query, it returns matching pages from across the internet.
+- **AI Search** searches **your own data**. You index your content, and it provides managed retrieval over your documents.
+
+Use Web Search when your agent needs real-time information from the open web. Use AI Search when you need search over content you control.
+
+---
+
+## Related products
+
+<RelatedProduct header="Browser Run" href="/browser-run/" product="browser-run">
+
+Fetch full page content, extract structured data, take screenshots, and generate PDFs from any URL returned by Web Search.
+
+</RelatedProduct>
+
+<RelatedProduct header="Workers" href="/workers/" product="workers">
+
+Build serverless applications and deploy instantly across the globe for exceptional performance, reliability, and scale.
+
+</RelatedProduct>
+
+<RelatedProduct header="Workers AI" href="/workers-ai/" product="workers-ai">
+
+Run machine learning models, powered by serverless GPUs, on Cloudflare's global network.
+
+</RelatedProduct>
+
+<RelatedProduct header="AI Gateway" href="/ai-gateway/" product="ai-gateway">
+
+Observe and control your AI applications with caching, rate limiting, request retries, model fallback, and more.
+
+</RelatedProduct>
+
+<RelatedProduct header="Agents" href="/agents/" product="agents">
+
+Build AI-powered agents with persistent state, tool use, and real-time communication using the Agents SDK.
+
+</RelatedProduct>
+
+---
+
+## More resources
+
+<CardGrid>
+
+<LinkTitleCard
+	title="Get started"
+	href="/web-search/get-started/"
+	icon="open-book"
+>
+	Set up your first Web Search binding and run a query.
+</LinkTitleCard>
+
+<LinkTitleCard title="Examples" href="/web-search/examples/" icon="pen">
+	Code examples for common Web Search patterns.
+</LinkTitleCard>
+
+<LinkTitleCard title="Pricing" href="/web-search/pricing/" icon="seti:shell">
+	Learn about Web Search pricing.
+</LinkTitleCard>
+
+<LinkTitleCard title="Limits" href="/web-search/limits/" icon="document">
+	Learn about Web Search limits.
+</LinkTitleCard>
+
+<LinkTitleCard
+	title="Developer Discord"
+	href="https://discord.cloudflare.com"
+	icon="discord"
+>
+	Connect with the Workers community on Discord to ask questions, show what you
+	are building, and discuss the platform with other developers.
+</LinkTitleCard>
+
+<LinkTitleCard
+	title="@CloudflareDev"
+	href="https://x.com/cloudflaredev"
+	icon="x.com"
+>
+	Follow @CloudflareDev on Twitter to learn about product announcements, and
+	what is new in Cloudflare Workers.
+</LinkTitleCard>
+
+</CardGrid>

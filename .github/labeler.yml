@@ -370,6 +370,10 @@ product:web3:
   - changed-files:
       - any-glob-to-any-file:
           - src/content/docs/web3/**
+product:web-search:
+  - changed-files:
+      - any-glob-to-any-file:
+          - src/content/docs/web-search/**
 product:workers:
   - changed-files:
       - any-glob-to-any-file:

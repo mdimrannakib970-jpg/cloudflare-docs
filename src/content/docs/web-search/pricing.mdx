@@ -1,0 +1,35 @@
+---
+title: Pricing
+pcx_content_type: reference
+description: Web Search pricing for Workers Free and Workers Paid plans.
+sidebar:
+  order: 10
+  badge: Beta
+head:
+  - tag: title
+    content: Web Search pricing
+---
+
+import { Plan } from "~/components";
+
+<Plan type="workers-all" />
+
+Web Search is billed per query. Each call to `search()` or the REST API counts as one query.
+
+## Pricing
+
+| | Workers Free | Workers Paid |
+| --- | --- | --- |
+| **Included queries** | 1,000 per month | 3,000 per month |
+| **Additional queries** | Not available | $5.00 per 1,000 queries |
+
+On the Workers Free plan, queries beyond the included allotment are rejected until the next billing period. On the Workers Paid plan, additional queries are billed at the overage rate.
+
+## What counts as a query
+
+Each call to `env.WEBSEARCH.search()` (binding) or `POST /accounts/{account_id}/websearch/search` (REST API) counts as one query, regardless of the `limit` parameter or the number of results returned.
+
+## Related
+
+- [Limits](/web-search/limits/)
+- [Workers pricing](/workers/platform/pricing/)

@@ -1,0 +1,101 @@
+---
+title: AI SDK
+pcx_content_type: how-to
+description: Add web search as a tool to AI SDK applications using the webSearchTool() factory from @cloudflare/websearch.
+sidebar:
+  order: 1
+  badge: Beta
+head:
+  - tag: title
+    content: Use Web Search with the AI SDK
+---
+
+import { PackageManagers, TypeScriptExample, WranglerConfig } from "~/components";
+
+The `@cloudflare/websearch` package provides a `webSearchTool()` factory that works with the [AI SDK](https://sdk.vercel.ai/). Add web search as a tool in any `generateText` or `streamText` call.
+
+## Install
+
+<PackageManagers pkg="@cloudflare/websearch" />
+
+## Set up bindings
+
+Your Worker needs both the `web_search` and `ai` bindings:
+
+<WranglerConfig>
+
+```toml
+name = "search-agent"
+main = "src/index.ts"
+compatibility_date = "$today"
+
+[web_search]
+binding = "WEBSEARCH"
+
+[ai]
+binding = "AI"
+```
+
+</WranglerConfig>
+
+## Use webSearchTool
+
+Import `webSearchTool` and pass it as a tool to `generateText`:
+
+<TypeScriptExample>
+
+```ts
+import { webSearchTool } from "@cloudflare/websearch/ai-sdk";
+import { generateText, stepCountIs } from "ai";
+import { createWorkersAI } from "workers-ai-provider";
+
+export default {
+	async fetch(request, env): Promise<Response> {
+		const workersai = createWorkersAI({ binding: env.AI });
+
+		const { text } = await generateText({
+			model: workersai("@cf/moonshotai/kimi-k2.5"),
+			tools: {
+				search: webSearchTool({ binding: env.WEBSEARCH }),
+			},
+			stopWhen: stepCountIs(3),
+			prompt: "Find the latest Cloudflare Workers blog posts and summarize them",
+		});
+
+		return new Response(text);
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+The tool description tells the LLM that Web Search returns URLs and metadata, not page content. The LLM will naturally chain a search call with a follow-up `fetch()` if it needs the full page body.
+
+## How it works
+
+`webSearchTool()` creates a standard AI SDK [tool](https://sdk.vercel.ai/docs/ai-sdk-core/tools-and-tool-calling) with:
+
+- An input schema accepting `query` (required) and `limit` (optional)
+- An `execute` function that calls `binding.search()`
+- A description that guides the LLM to use it for discovery, not content retrieval
+
+The tool definition is equivalent to:
+
+```ts
+tool({
+	description:
+		"Search the web for URLs matching a query. Returns titles and " +
+		"metadata only -- not page content. Fetch a URL yourself if you " +
+		"need its content.",
+	inputSchema: z.object({
+		query: z.string(),
+		limit: z.number().int().min(1).max(20).optional(),
+	}),
+	execute: ({ query, limit }) => binding.search({ query, limit }),
+});
+```
+
+## Next steps
+
+- Use Web Search with the [Agents SDK](/web-search/ai-integration/agents-sdk/) for stateful chat agents
+- See [examples](/web-search/examples/) pairing Web Search with Browser Run

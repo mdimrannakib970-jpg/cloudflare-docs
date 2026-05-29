@@ -1,0 +1,116 @@
+---
+title: Agents SDK
+pcx_content_type: how-to
+description: Add web search as a tool to Cloudflare Agents using the webSearchTool() factory from @cloudflare/websearch.
+sidebar:
+  order: 2
+  badge: Beta
+head:
+  - tag: title
+    content: Use Web Search with the Agents SDK
+---
+
+import { TypeScriptExample, WranglerConfig } from "~/components";
+
+The same `webSearchTool()` factory from `@cloudflare/websearch` works inside [Cloudflare Agents](/agents/). Give your chat agent the ability to search the web as a tool call.
+
+## Set up bindings
+
+Your Worker needs the `web_search` binding alongside your agent's other bindings:
+
+<WranglerConfig>
+
+```toml
+name = "chat-agent"
+main = "src/index.ts"
+compatibility_date = "$today"
+
+[web_search]
+binding = "WEBSEARCH"
+
+[ai]
+binding = "AI"
+```
+
+</WranglerConfig>
+
+## Add Web Search to a chat agent
+
+Use `webSearchTool()` inside an `AIChatAgent` to let the agent search the web during conversations:
+
+<TypeScriptExample>
+
+```ts
+import { AIChatAgent } from "@cloudflare/agents/ai-chat-agent";
+import { webSearchTool } from "@cloudflare/websearch/ai-sdk";
+import { streamText } from "ai";
+import { createWorkersAI } from "workers-ai-provider";
+
+export class ChatAgent extends AIChatAgent<Env> {
+	async onChatMessage(onFinish) {
+		const workersai = createWorkersAI({ binding: this.env.AI });
+
+		return streamText({
+			model: workersai("@cf/moonshotai/kimi-k2.5"),
+			messages: this.messages,
+			tools: {
+				search: webSearchTool({ binding: this.env.WEBSEARCH }),
+			},
+			onFinish,
+		});
+	}
+}
+```
+
+</TypeScriptExample>
+
+When a user asks a question that requires current information, the agent will call the search tool, evaluate the results, and incorporate the findings into its response.
+
+## Composing with other tools
+
+Web Search works well alongside other tools in an agent. For example, you can combine it with a tool that fetches page content so the agent can both discover URLs and retrieve their content:
+
+<TypeScriptExample>
+
+```ts
+import { AIChatAgent } from "@cloudflare/agents/ai-chat-agent";
+import { webSearchTool } from "@cloudflare/websearch/ai-sdk";
+import { streamText, tool } from "ai";
+import { createWorkersAI } from "workers-ai-provider";
+import { z } from "zod";
+
+export class ResearchAgent extends AIChatAgent<Env> {
+	async onChatMessage(onFinish) {
+		const workersai = createWorkersAI({ binding: this.env.AI });
+
+		return streamText({
+			model: workersai("@cf/moonshotai/kimi-k2.5"),
+			messages: this.messages,
+			tools: {
+				search: webSearchTool({ binding: this.env.WEBSEARCH }),
+				fetchPage: tool({
+					description: "Fetch the markdown content of a URL",
+					parameters: z.object({ url: z.string().url() }),
+					execute: async ({ url }) => {
+						const response = await this.env.BROWSER.quickAction(
+							"markdown",
+							{ url },
+						);
+						return await response.text();
+					},
+				}),
+			},
+			onFinish,
+		});
+	}
+}
+```
+
+</TypeScriptExample>
+
+The agent will naturally chain these: search first to find relevant URLs, then fetch content from the ones it needs.
+
+## Next steps
+
+- See the [Build a web research agent](/web-search/tutorials/agent-web-research/) tutorial for a full end-to-end example
+- Learn more about [Cloudflare Agents](/agents/)

@@ -1,0 +1,14 @@
+id: nXcsht
+name: Web Search
+
+entry:
+  title: Web Search
+  url: /web-search/
+  group: Developer platform
+  additional_groups: [AI]
+  tags: [AI]
+
+meta:
+  title: Cloudflare Web Search docs
+  description: Give your agents real-time access to the web with a managed search API
+  author: "@cloudflare"

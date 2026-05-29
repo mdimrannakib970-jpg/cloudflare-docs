@@ -1,0 +1,50 @@
+---
+title: Limits
+pcx_content_type: reference
+description: Web Search account limits, request limits, and response field availability.
+sidebar:
+  order: 11
+  badge: Beta
+head:
+  - tag: title
+    content: Web Search limits
+---
+
+## Account limits
+
+| Limit | Workers Free | Workers Paid |
+| --- | --- | --- |
+| Included queries per month | 1,000 | 3,000 (then billed) |
+
+## Request limits
+
+| Limit | Value |
+| --- | --- |
+| Max results per query (`limit`) | 20 |
+| Default results per query | 10 |
+| Min results per query | 1 |
+
+## Response fields
+
+| Field | Type | Always present |
+| --- | --- | --- |
+| `url` | `string` | Yes |
+| `title` | `string` | Yes |
+| `description` | `string` | No |
+| `summary` | `string` | No |
+| `thumbnailUrl` | `string` | No |
+| `faviconUrl` | `string` | No |
+
+Optional fields depend on the page's metadata. Not all pages have OpenGraph images (`thumbnailUrl`) or meta descriptions (`description`).
+
+## Beta limitations
+
+During the beta period:
+
+- Rate limits may be adjusted as usage patterns are understood.
+- Additional query parameters (domain filtering, freshness, language) are planned for future releases.
+- Response fields may be added in future versions. Fields will not be removed.
+
+## Related
+
+- [Pricing](/web-search/pricing/)

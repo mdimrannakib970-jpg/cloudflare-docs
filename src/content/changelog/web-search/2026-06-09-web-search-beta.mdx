@@ -1,0 +1,22 @@
+---
+title: Web Search beta launch
+description: Cloudflare Web Search is now available in beta, giving agents and Workers real-time access to the public web.
+date: 2026-06-09
+products:
+  - web-search
+---
+
+Cloudflare Web Search is now available in beta. Web Search is a managed search API that gives your agents and Workers real-time access to the public web.
+
+**What it does:** Send a query, get back a list of URLs with titles, descriptions, and metadata. Web Search handles discovery. You handle what to do with the results.
+
+**How to use it:**
+
+- **Workers binding**: add `[web_search]` to your Wrangler config and call `env.WEBSEARCH.search()`
+- **REST API**: `POST /accounts/{account_id}/websearch/search`
+- **MCP**: available automatically via the [Cloudflare API MCP server](https://github.com/cloudflare/mcp)
+- **AI SDK / Agents SDK**: use the `webSearchTool()` from `@cloudflare/websearch`
+
+Pair Web Search with [Browser Run](/browser-run/) to fetch full page content, extract structured data, or generate screenshots from any search result.
+
+Read the [documentation](/web-search/) to get started.

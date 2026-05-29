@@ -1,0 +1,200 @@
+---
+title: Build a web research agent
+pcx_content_type: tutorial
+description: Build a Worker that searches the web, fetches content from multiple sources using Browser Run, and synthesizes a research briefing with Workers AI.
+sidebar:
+  order: 7
+  badge: Beta
+difficulty: Intermediate
+products:
+  - web-search
+  - browser-run
+  - workers-ai
+head:
+  - tag: title
+    content: "Tutorial: Build a web research agent"
+---
+
+import { PackageManagers, TypeScriptExample, WranglerConfig, Steps } from "~/components";
+
+In this tutorial, you will build a Worker that searches the web for a topic, fetches content from the most relevant results using Browser Run, and uses Workers AI to synthesize a research briefing across multiple sources.
+
+This is different from using [Browser Run /json](/browser-run/quick-actions/json-endpoint/) on a single URL. Here, the agent does not know any URLs upfront. It discovers them, decides which are worth reading, fetches multiple pages, and produces a synthesis that draws on all of them.
+
+## What you will build
+
+A research endpoint that:
+
+1. Accepts a topic as input
+2. Searches the web for relevant pages
+3. Fetches markdown content from the top results
+4. Sends all the content to an LLM to produce a briefing with citations
+
+## Prerequisites
+
+You need a Cloudflare account with a Workers Paid plan. Create a new project if you do not have one:
+
+<PackageManagers type="create" pkg="cloudflare@latest" args="research-agent" />
+
+Install the dependencies:
+
+<PackageManagers pkg="@cloudflare/websearch" />
+
+## 1. Configure bindings
+
+Your Worker needs three bindings: Web Search for discovery, Browser Run for content fetching, and Workers AI for synthesis.
+
+<WranglerConfig>
+
+```toml
+name = "research-agent"
+main = "src/index.ts"
+compatibility_date = "$today"
+
+[web_search]
+binding = "WEBSEARCH"
+
+[browser]
+binding = "BROWSER"
+
+[ai]
+binding = "AI"
+```
+
+</WranglerConfig>
+
+## 2. Search for relevant pages
+
+Start by searching the web for the given topic. Web Search returns URLs and metadata, not page content.
+
+<TypeScriptExample>
+
+```ts
+export default {
+	async fetch(request, env): Promise<Response> {
+		const url = new URL(request.url);
+		const topic = url.searchParams.get("topic");
+
+		if (!topic) {
+			return new Response("Missing ?topic= parameter", { status: 400 });
+		}
+
+		// Step 1: Discover relevant URLs
+		const { results } = await env.WEBSEARCH.search({
+			query: topic,
+			limit: 10,
+		});
+
+		if (results.length === 0) {
+			return new Response("No results found", { status: 404 });
+		}
+
+		// Step 2: Pick the top results based on titles and descriptions
+		const topResults = results.slice(0, 5);
+
+		// Step 3: Fetch markdown content from each page using Browser Run
+		const pages = await Promise.all(
+			topResults.map(async (r) => {
+				try {
+					const response = await env.BROWSER.quickAction("markdown", {
+						url: r.url,
+					});
+					const content = await response.text();
+					return {
+						title: r.title,
+						url: r.url,
+						content: content.slice(0, 3000),
+					};
+				} catch {
+					return { title: r.title, url: r.url, content: "" };
+				}
+			}),
+		);
+
+		// Filter out pages where content fetch failed
+		const validPages = pages.filter((p) => p.content.length > 0);
+
+		if (validPages.length === 0) {
+			return Response.json({
+				topic,
+				briefing: "Could not fetch content from any of the search results.",
+				sources: topResults.map((r) => ({ title: r.title, url: r.url })),
+			});
+		}
+
+		// Step 4: Synthesize a briefing across all sources
+		const sourceSummaries = validPages
+			.map(
+				(p, i) =>
+					`Source ${i + 1}: ${p.title} (${p.url})\n\n${p.content}`,
+			)
+			.join("\n\n---\n\n");
+
+		const aiResponse = await env.AI.run(
+			"@cf/meta/llama-3.3-70b-instruct-fp8-fast",
+			{
+				messages: [
+					{
+						role: "system",
+						content:
+							"You are a research assistant. Synthesize the provided sources into a concise briefing. Compare what different sources say. Cite sources by number. Do not make up information beyond what the sources contain.",
+					},
+					{
+						role: "user",
+						content: `Research topic: ${topic}\n\nSources:\n\n${sourceSummaries}\n\nProduce a briefing that synthesizes these sources. Include citations like [Source 1], [Source 2], etc.`,
+					},
+				],
+			},
+		);
+
+		return Response.json({
+			topic,
+			briefing: aiResponse.response,
+			sources: validPages.map((p) => ({
+				title: p.title,
+				url: p.url,
+			})),
+		});
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+## 3. Test locally
+
+<Steps>
+
+1. Start the development server:
+
+	<PackageManagers type="exec" pkg="wrangler" args="dev" />
+
+2. Send a test request:
+
+	```bash
+	curl "http://localhost:8787/?topic=latest+developments+in+WebAssembly"
+	```
+
+3. The response includes a synthesized briefing and a list of sources with citations.
+
+</Steps>
+
+## 4. Deploy
+
+<PackageManagers type="exec" pkg="wrangler" args="deploy" />
+
+## How this differs from single-page extraction
+
+With [Browser Run /json](/browser-run/quick-actions/json-endpoint/), you extract structured data from a URL you already know. This tutorial demonstrates a different pattern:
+
+- **Discovery**: the agent starts with a topic, not a URL. Web Search finds the relevant pages.
+- **Selection**: the agent evaluates results and picks the most relevant ones based on titles and descriptions.
+- **Multi-source synthesis**: the agent fetches content from multiple pages and produces output that draws on all of them, comparing and citing across sources.
+
+This workflow is what makes Web Search + Browser Run more powerful together than either product alone.
+
+## Next steps
+
+- Add the research agent to a [chat agent](/web-search/ai-integration/agents-sdk/) so users can ask follow-up questions
+- Use [/json](/browser-run/quick-actions/json-endpoint/) instead of /markdown to extract specific structured data from each result
+- Add domain filtering (coming soon) to focus research on specific sources

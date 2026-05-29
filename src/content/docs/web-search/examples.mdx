@@ -1,0 +1,154 @@
+---
+title: Examples
+pcx_content_type: example
+description: Code examples showing common Web Search patterns, including search with Browser Run for structured data, markdown, and HTML extraction.
+sidebar:
+  order: 6
+  badge: Beta
+head:
+  - tag: title
+    content: Web Search examples
+---
+
+import { TypeScriptExample } from "~/components";
+
+Code examples showing common Web Search patterns. Each example is a self-contained snippet you can adapt for your own use.
+
+## Basic search
+
+The simplest Web Search usage. Search for a query and return the results:
+
+<TypeScriptExample>
+
+```ts
+export default {
+	async fetch(request, env): Promise<Response> {
+		const { results } = await env.WEBSEARCH.search({
+			query: "Cloudflare Workers tutorials",
+			limit: 5,
+		});
+
+		return Response.json(
+			results.map((r) => ({
+				title: r.title,
+				url: r.url,
+				description: r.description,
+			})),
+		);
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+## Search and extract structured data
+
+Search for URLs, then use [Browser Run /json](/browser-run/quick-actions/json-endpoint/) to extract structured data from the top results. Useful when you need specific fields from pages you do not know about upfront.
+
+<TypeScriptExample>
+
+```ts
+export default {
+	async fetch(request, env): Promise<Response> {
+		// 1. Search for relevant pages
+		const { results } = await env.WEBSEARCH.search({
+			query: "YC W25 batch companies",
+			limit: 5,
+		});
+
+		// 2. Extract structured data from each result using Browser Run /json
+		const extracted = await Promise.all(
+			results.map(async (r) => {
+				const response = await env.BROWSER.quickAction("json", {
+					url: r.url,
+					prompt: "Extract company information",
+					response_format: {
+						type: "json_schema",
+						schema: {
+							type: "object",
+							properties: {
+								company_name: { type: "string" },
+								description: { type: "string" },
+								website: { type: "string" },
+							},
+						},
+					},
+				});
+				const data = await response.json();
+				return { source: r.url, data };
+			}),
+		);
+
+		return Response.json(extracted);
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+## Search and get markdown
+
+Search for URLs, then fetch the full page content as markdown using [Browser Run /markdown](/browser-run/quick-actions/markdown-endpoint/). Good for feeding content into an LLM.
+
+<TypeScriptExample>
+
+```ts
+export default {
+	async fetch(request, env): Promise<Response> {
+		const { results } = await env.WEBSEARCH.search({
+			query: "how to deploy Cloudflare Workers",
+			limit: 3,
+		});
+
+		const pages = await Promise.all(
+			results.map(async (r) => {
+				const response = await env.BROWSER.quickAction("markdown", {
+					url: r.url,
+				});
+				const content = await response.text();
+				return { title: r.title, url: r.url, content };
+			}),
+		);
+
+		return Response.json(pages);
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+## Search and get HTML
+
+Search for URLs, then fetch the rendered HTML using [Browser Run /content](/browser-run/quick-actions/content-endpoint/). Useful when you need the full rendered page, including JavaScript-generated content.
+
+<TypeScriptExample>
+
+```ts
+export default {
+	async fetch(request, env): Promise<Response> {
+		const { results } = await env.WEBSEARCH.search({
+			query: "Cloudflare status page",
+			limit: 3,
+		});
+
+		const pages = await Promise.all(
+			results.map(async (r) => {
+				const response = await env.BROWSER.quickAction("content", {
+					url: r.url,
+				});
+				const html = await response.text();
+				return { title: r.title, url: r.url, html };
+			}),
+		);
+
+		return Response.json(pages);
+	},
+} satisfies ExportedHandler<Env>;
+```
+
+</TypeScriptExample>
+
+## Next steps
+
+- Follow the [Build a web research agent](/web-search/tutorials/agent-web-research/) tutorial for a full multi-source research workflow
+- Learn about [AI SDK](/web-search/ai-integration/ai-sdk/) and [Agents SDK](/web-search/ai-integration/agents-sdk/) integration
