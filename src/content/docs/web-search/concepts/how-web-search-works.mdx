@@ -10,7 +10,7 @@ head:
     content: How Web Search works
 ---
 
-Web Search is a **discovery** API. It takes a query and returns a list of URLs that match, along with metadata like titles and descriptions. It does not return page content.
+Web Search is a discovery API. It takes a query and returns a list of URLs that match, along with metadata like titles and descriptions. It does not return page content.
 
 This design is intentional. Discovery and content retrieval are separate steps, which gives you full control over what you fetch and how you process it.
 
@@ -18,8 +18,8 @@ This design is intentional. Discovery and content retrieval are separate steps, 
 
 A typical workflow with Web Search has two steps:
 
-1. **Search** (Web Search): find relevant URLs for a query
-2. **Fetch** (Browser Run or `fetch()`): get the content of the pages you want
+1. Search (Web Search): find relevant URLs for a query
+2. Fetch (Browser Run or `fetch()`): get the content of the pages you want
 
 ```
 Query → Web Search → URLs + metadata
@@ -44,16 +44,16 @@ This composable approach means you choose the right tool for content retrieval. 
 
 Each result contains metadata about the page, not the page content itself:
 
-| Field | Description |
-| --- | --- |
-| `url` | The canonical URL of the page |
-| `title` | The page title |
-| `description` | Page-level description (from the page's meta tags), if available |
-| `summary` | A summary of the page contents, if available |
-| `authors` | Author names associated with the page |
-| `imageUrl` | Preview image URL (OpenGraph or similar) |
-| `faviconUrl` | Favicon URL for the page's domain |
-| `lastModifiedDate` | When the page was last modified (ISO-8601) |
+| Field              | Description                                                      |
+| ------------------ | ---------------------------------------------------------------- |
+| `url`              | The canonical URL of the page                                    |
+| `title`            | The page title                                                   |
+| `description`      | Page-level description (from the page's meta tags), if available |
+| `summary`          | A summary of the page contents, if available                     |
+| `authors`          | Author names associated with the page                            |
+| `imageUrl`         | Preview image URL (OpenGraph or similar)                         |
+| `faviconUrl`       | Favicon URL for the page's domain                                |
+| `lastModifiedDate` | When the page was last modified (ISO-8601)                       |
 
 This metadata is enough for an agent to assess relevance and decide which pages to fetch.
 
@@ -61,11 +61,11 @@ This metadata is enough for an agent to assess relevance and decide which pages 
 
 Web Search and [AI Search](/ai-search/) serve different purposes:
 
-| | Web Search | AI Search |
-| --- | --- | --- |
-| **What it searches** | The public web | Your own data |
-| **Setup** | Zero-setup, one binding | Create an instance, index your content |
-| **Use case** | Find information on the open internet | Search over documents you control |
-| **Content** | Returns URLs (you fetch content separately) | Returns indexed content directly |
+| Aspect               | Web Search                                  | AI Search                                  |
+| -------------------- | ------------------------------------------- | ------------------------------------------ |
+| **What it searches** | The public web                              | Specific content you define                |
+| **Setup**            | Add one binding                             | Create an instance, index your content     |
+| **Use case**         | Find information on the open internet       | Retrieval over specific content you define |
+| **Content**          | Returns URLs (you fetch content separately) | Returns indexed content directly           |
 
-Use Web Search when your agent needs real-time information from across the web. Use AI Search when you need retrieval over your own documents, knowledge base, or application data.
+Use Web Search when your agent needs real-time information from across the web. Use AI Search when you need retrieval over specific content you define.

@@ -1,7 +1,7 @@
 ---
 title: Limits
 pcx_content_type: reference
-description: Web Search account limits, request limits, and response field availability.
+description: Learn about the limits associated with Web Search.
 sidebar:
   order: 11
   badge: Beta
@@ -10,43 +10,16 @@ head:
     content: Web Search limits
 ---
 
-## Account limits
+Web Search limits are based on your [Cloudflare Workers plan](/workers/platform/pricing/).
 
-| Limit | Workers Free | Workers Paid |
-| --- | --- | --- |
-| Included queries per month | 1,000 | 3,000 (then billed) |
+For pricing information, refer to [Web Search pricing](/web-search/pricing/).
 
-## Request limits
-
-| Limit | Value |
-| --- | --- |
-| Max results per query (`limit`) | 50 |
-| Default results per query | 10 |
-| Min results per query | 1 |
-| Max query length | 1,024 characters |
-
-## Response fields
-
-| Field | Type | Always present |
-| --- | --- | --- |
-| `url` | `string` | Yes |
-| `title` | `string` | Yes |
-| `description` | `string` | No |
-| `summary` | `string` | No |
-| `authors` | `string[]` | No |
-| `imageUrl` / `image_url` | `string` | No |
-| `faviconUrl` / `favicon_url` | `string` | No |
-| `lastModifiedDate` / `last_modified_date` | `string` | No |
-
-Optional fields depend on the page's metadata. Not all pages have OpenGraph images (`thumbnailUrl`) or meta descriptions (`description`).
-
-## Beta limitations
-
-During the beta period:
-
-- Rate limits may be adjusted as usage patterns are understood.
-- Additional query parameters (domain filtering, freshness, language) are planned for future releases.
-- Response fields may be added in future versions. Fields will not be removed.
+| Limit                           | Value            |
+| ------------------------------- | ---------------- |
+| Queries per second              | TBD              |
+| Max results per query (`limit`) | 20               |
+| Default results per query       | 10               |
+| Max query length                | 1,024 characters |
 
 ## Related
 

@@ -10,7 +10,11 @@ head:
     content: Use Web Search with the AI SDK
 ---
 
-import { PackageManagers, TypeScriptExample, WranglerConfig } from "~/components";
+import {
+	PackageManagers,
+	TypeScriptExample,
+	WranglerConfig,
+} from "~/components";
 
 The `@cloudflare/websearch` package provides a `webSearchTool()` factory that works with the [AI SDK](https://sdk.vercel.ai/). Add web search as a tool in any `generateText` or `streamText` call.
 
@@ -59,7 +63,7 @@ export default {
 				search: webSearchTool({ binding: env.WEBSEARCH }),
 			},
 			stopWhen: stepCountIs(3),
-			prompt: "Find the latest Cloudflare Workers blog posts and summarize them",
+			prompt: "Find the latest Cloudflare blog posts and summarize them",
 		});
 
 		return new Response(text);
@@ -81,6 +85,8 @@ The tool description tells the LLM that Web Search returns URLs and metadata, no
 
 The tool definition is equivalent to:
 
+<TypeScriptExample>
+
 ```ts
 tool({
 	description:
@@ -89,13 +95,14 @@ tool({
 		"need its content.",
 	inputSchema: z.object({
 		query: z.string(),
-		limit: z.number().int().min(1).max(50).optional(),
+		limit: z.number().int().min(1).max(20).optional(),
 	}),
 	execute: ({ query, limit }) => binding.search({ query, limit }),
 });
 ```
 
+</TypeScriptExample>
+
 ## Next steps
 
-- Use Web Search with the [Agents SDK](/web-search/ai-integration/agents-sdk/) for stateful chat agents
-- See [examples](/web-search/examples/) pairing Web Search with Browser Run
+For stateful chat agents, use Web Search with the [Agents SDK](/web-search/ai-integration/agents-sdk/). For more code examples pairing Web Search with Browser Run, refer to [Web Search examples](/web-search/examples/).

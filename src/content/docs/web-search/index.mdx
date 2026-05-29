@@ -1,7 +1,7 @@
 ---
 title: Web Search
 pcx_content_type: overview
-description: Give your agents real-time access to the web with Cloudflare Web Search. A managed search API that returns URLs and metadata for any query.
+description: Give your agents real-time access to the web with Cloudflare Web Search. A search API that returns URLs and metadata for any query.
 sidebar:
   order: 1
   badge: Beta
@@ -35,9 +35,8 @@ Give your agents real-time access to the web.
 Cloudflare Web Search is currently in beta. Features and APIs may change before general availability.
 :::
 
-Web Search is a managed search API that returns URLs and metadata for any query. Use it from a Workers binding, the REST API, or any MCP client. No instances to create, no namespaces to configure.
-
-Web Search is a discovery tool. It finds relevant URLs on the public web so your agents can decide which pages to read. To get the content of a page, pair Web Search with [Browser Run](/browser-run/) or the standard `fetch()` API.
+{/* TODO: Update /web-search/mcp-server/ link once the web-search-specific MCP server page exists */}
+Web Search is a search API that returns URLs and metadata for any query. Use it from a [Workers Binding](/web-search/get-started/#workers-binding), the [REST API](/web-search/get-started/#rest-api), or any [MCP client](/web-search/mcp-server/).
 
 ## Use cases
 
@@ -48,12 +47,6 @@ Web Search is a discovery tool. It finds relevant URLs on the public web so your
 
 ## Key features
 
-<Feature header="Zero-setup" href="/web-search/get-started/">
-
-No instances to create, no namespaces to configure. Add one line to your config and start searching.
-
-</Feature>
-
 <Feature header="Composable" href="/web-search/examples/">
 
 Returns URLs and metadata. Pair with [Browser Run](/browser-run/) to fetch full content, extract structured data, or take screenshots of any result.
@@ -62,7 +55,8 @@ Returns URLs and metadata. Pair with [Browser Run](/browser-run/) to fetch full 
 
 <Feature header="Agent-ready" href="/web-search/ai-integration/">
 
-Drop-in tools for the AI SDK, Agents SDK, and MCP. Works out of the box with popular AI frameworks.
+{/* TODO: Update /web-search/mcp-server/ link once the web-search-specific MCP server page exists */}
+Drop-in tools for the [Agents SDK](/web-search/ai-integration/agents-sdk/), [MCP](/web-search/mcp-server/), and [AI SDK](/web-search/ai-integration/ai-sdk/). Works out of the box with popular AI frameworks.
 
 </Feature>
 
@@ -70,12 +64,9 @@ Drop-in tools for the AI SDK, Agents SDK, and MCP. Works out of the box with pop
 
 ## Web Search vs AI Search
 
-Web Search and [AI Search](/ai-search/) are different products for different jobs:
+Web Search and [AI Search](/ai-search/) are different products for different jobs. Web Search discovers URLs on the public web: you provide a query, and it returns matching pages from across the Internet. AI Search searches specific content you define: you choose what to index, and it provides retrieval over those documents.
 
-- **Web Search** discovers URLs on the **public web**. You provide a query, it returns matching pages from across the internet.
-- **AI Search** searches **your own data**. You index your content, and it provides managed retrieval over your documents.
-
-Use Web Search when your agent needs real-time information from the open web. Use AI Search when you need search over content you control.
+Use Web Search when your agent needs real-time information from the open web. Use AI Search when you need retrieval over specific content you define.
 
 ---
 
@@ -87,9 +78,15 @@ Fetch full page content, extract structured data, take screenshots, and generate
 
 </RelatedProduct>
 
-<RelatedProduct header="Workers" href="/workers/" product="workers">
+<RelatedProduct header="AI Search" href="/ai-search/" product="ai-search">
 
-Build serverless applications and deploy instantly across the globe for exceptional performance, reliability, and scale.
+Index content and query it with natural language. Build retrieval into your applications and agents.
+
+</RelatedProduct>
+
+<RelatedProduct header="Agents" href="/agents/" product="agents">
+
+Build AI-powered agents with persistent state, tool use, and real-time communication using the Agents SDK.
 
 </RelatedProduct>
 
@@ -99,15 +96,15 @@ Run machine learning models, powered by serverless GPUs, on Cloudflare's global 
 
 </RelatedProduct>
 
-<RelatedProduct header="AI Gateway" href="/ai-gateway/" product="ai-gateway">
+<RelatedProduct header="Workers" href="/workers/" product="workers">
 
-Observe and control your AI applications with caching, rate limiting, request retries, model fallback, and more.
+Build serverless applications and deploy instantly across the globe for exceptional performance, reliability, and scale.
 
 </RelatedProduct>
 
-<RelatedProduct header="Agents" href="/agents/" product="agents">
+<RelatedProduct header="AI Gateway" href="/ai-gateway/" product="ai-gateway">
 
-Build AI-powered agents with persistent state, tool use, and real-time communication using the Agents SDK.
+Observe and control your AI applications with caching, rate limiting, request retries, model fallback, and more.
 
 </RelatedProduct>
 
@@ -122,7 +119,7 @@ Build AI-powered agents with persistent state, tool use, and real-time communica
 	href="/web-search/get-started/"
 	icon="open-book"
 >
-	Set up your first Web Search binding and run a query.
+	Set up Web Search and run your first query.
 </LinkTitleCard>
 
 <LinkTitleCard title="Examples" href="/web-search/examples/" icon="pen">

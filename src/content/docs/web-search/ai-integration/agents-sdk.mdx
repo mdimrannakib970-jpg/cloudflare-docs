@@ -92,10 +92,9 @@ export class ResearchAgent extends AIChatAgent<Env> {
 					description: "Fetch the markdown content of a URL",
 					parameters: z.object({ url: z.string().url() }),
 					execute: async ({ url }) => {
-						const response = await this.env.BROWSER.quickAction(
-							"markdown",
-							{ url },
-						);
+						const response = await this.env.BROWSER.quickAction("markdown", {
+							url,
+						});
 						return await response.text();
 					},
 				}),
@@ -112,5 +111,4 @@ The agent will naturally chain these: search first to find relevant URLs, then f
 
 ## Next steps
 
-- See the [Build a web research agent](/web-search/tutorials/agent-web-research/) tutorial for a full end-to-end example
-- Learn more about [Cloudflare Agents](/agents/)
+For a full end-to-end example, refer to the [Build a web research agent](/web-search/tutorials/agent-web-research/) tutorial. To learn more about building agents on Cloudflare, refer to the [Cloudflare Agents](/agents/) documentation.

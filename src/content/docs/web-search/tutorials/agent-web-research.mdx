@@ -15,7 +15,12 @@ head:
     content: "Tutorial: Build a web research agent"
 ---
 
-import { PackageManagers, TypeScriptExample, WranglerConfig, Steps } from "~/components";
+import {
+	PackageManagers,
+	TypeScriptExample,
+	WranglerConfig,
+	Steps,
+} from "~/components";
 
 In this tutorial, you will build a Worker that searches the web for a topic, fetches content from the most relevant results using Browser Run, and uses Workers AI to synthesize a research briefing across multiple sources.
 
@@ -124,10 +129,7 @@ export default {
 
 		// Step 4: Synthesize a briefing across all sources
 		const sourceSummaries = validPages
-			.map(
-				(p, i) =>
-					`Source ${i + 1}: ${p.title} (${p.url})\n\n${p.content}`,
-			)
+			.map((p, i) => `Source ${i + 1}: ${p.title} (${p.url})\n\n${p.content}`)
 			.join("\n\n---\n\n");
 
 		const aiResponse = await env.AI.run(
@@ -197,4 +199,3 @@ This workflow is what makes Web Search + Browser Run more powerful together than
 
 - Add the research agent to a [chat agent](/web-search/ai-integration/agents-sdk/) so users can ask follow-up questions
 - Use [/json](/browser-run/quick-actions/json-endpoint/) instead of /markdown to extract specific structured data from each result
-- Add domain filtering (coming soon) to focus research on specific sources

@@ -1,89 +1,13 @@
 ---
+pcx_content_type: navigation
 title: MCP server
-pcx_content_type: how-to
-description: Use Web Search from Claude Desktop, Cursor, OpenCode, or any MCP client via the Cloudflare API MCP server.
+description: Access the Web Search MCP server on GitHub to integrate web search with AI agents.
+# TODO: Update external_link to the web-search-specific path once it exists
+# (e.g. https://github.com/cloudflare/mcp-server-cloudflare/tree/main/apps/web-search)
+external_link: https://github.com/cloudflare/mcp-server-cloudflare
 sidebar:
   order: 5
   badge: Beta
-head:
-  - tag: title
-    content: Use Web Search via MCP
+products:
+  - web-search
 ---
-
-Web Search is available as an MCP tool through the [Cloudflare API MCP server](https://github.com/cloudflare/mcp). No dedicated MCP server is needed. The REST API is automatically exposed as an MCP tool, so any MCP client can use Web Search with zero additional setup.
-
-## Connect from an MCP client
-
-The Cloudflare API MCP server works with Claude Desktop, Claude Code, Cursor, OpenCode, and other MCP clients.
-
-### Claude Code
-
-```bash
-claude mcp add cloudflare-api -- npx @cloudflare/mcp-server-cloudflare
-```
-
-### Cursor
-
-Add to your Cursor MCP settings (`.cursor/mcp.json`):
-
-```json
-{
-  "mcpServers": {
-    "cloudflare": {
-      "command": "npx",
-      "args": ["@cloudflare/mcp-server-cloudflare"]
-    }
-  }
-}
-```
-
-### OpenCode
-
-Add to your `opencode.json`:
-
-```json
-{
-  "mcp": {
-    "cloudflare": {
-      "type": "local",
-      "command": ["npx", "@cloudflare/mcp-server-cloudflare"]
-    }
-  }
-}
-```
-
-## Authentication
-
-The MCP server uses your Cloudflare API token. Your token must include the **Web Search Read** permission. You can create one in the [Cloudflare dashboard API tokens page](https://dash.cloudflare.com/profile/api-tokens).
-
-The MCP server will prompt you to authenticate on first use.
-
-## Agent-installable prompt
-
-Paste this prompt into any AI assistant to let it set up Web Search for itself:
-
-```text
-Set up the Cloudflare MCP server so you can search the web. Follow these steps:
-
-1. Detect which platform you're running on (Claude Code, Cursor, OpenCode, etc.)
-2. Install the Cloudflare MCP server using the correct method for your platform:
-   - Package: @cloudflare/mcp-server-cloudflare
-   - Run with: npx @cloudflare/mcp-server-cloudflare
-3. Authenticate with your Cloudflare API token when prompted.
-4. Verify the server is connected and you have access to the websearch_search tool.
-5. Run a test search (e.g. "latest Cloudflare blog posts") to confirm you get results.
-6. Report back whether setup succeeded.
-```
-
-## Available tools
-
-Once connected, the MCP server exposes Web Search as a tool. The tool name and parameters match the [REST API](/web-search/get-started/#request-parameters):
-
-| Tool | Description |
-| --- | --- |
-| `websearch_search` | Search the web. Accepts `query` (required) and `limit` (optional). |
-
-## Next steps
-
-- Learn more about the [Cloudflare API MCP server](https://github.com/cloudflare/mcp)
-- See [examples](/web-search/examples/) of Web Search in action
