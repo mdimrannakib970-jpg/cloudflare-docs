@@ -80,17 +80,17 @@ export default {
 		}
 
 		// Step 1: Discover relevant URLs
-		const { results } = await env.WEBSEARCH.search({
+		const { items } = await env.WEBSEARCH.search({
 			query: topic,
 			limit: 10,
 		});
 
-		if (results.length === 0) {
+		if (items.length === 0) {
 			return new Response("No results found", { status: 404 });
 		}
 
 		// Step 2: Pick the top results based on titles and descriptions
-		const topResults = results.slice(0, 5);
+		const topResults = items.slice(0, 5);
 
 		// Step 3: Fetch markdown content from each page using Browser Run
 		const pages = await Promise.all(

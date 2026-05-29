@@ -89,7 +89,7 @@ tool({
 		"need its content.",
 	inputSchema: z.object({
 		query: z.string(),
-		limit: z.number().int().min(1).max(20).optional(),
+		limit: z.number().int().min(1).max(50).optional(),
 	}),
 	execute: ({ query, limit }) => binding.search({ query, limit }),
 });

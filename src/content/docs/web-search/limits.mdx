@@ -20,9 +20,10 @@ head:
 
 | Limit | Value |
 | --- | --- |
-| Max results per query (`limit`) | 20 |
+| Max results per query (`limit`) | 50 |
 | Default results per query | 10 |
 | Min results per query | 1 |
+| Max query length | 1,024 characters |
 
 ## Response fields
 
@@ -32,8 +33,10 @@ head:
 | `title` | `string` | Yes |
 | `description` | `string` | No |
 | `summary` | `string` | No |
-| `thumbnailUrl` | `string` | No |
-| `faviconUrl` | `string` | No |
+| `authors` | `string[]` | No |
+| `imageUrl` / `image_url` | `string` | No |
+| `faviconUrl` / `favicon_url` | `string` | No |
+| `lastModifiedDate` / `last_modified_date` | `string` | No |
 
 Optional fields depend on the page's metadata. Not all pages have OpenGraph images (`thumbnailUrl`) or meta descriptions (`description`).
 

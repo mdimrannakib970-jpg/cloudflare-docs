@@ -23,13 +23,13 @@ The simplest Web Search usage. Search for a query and return the results:
 ```ts
 export default {
 	async fetch(request, env): Promise<Response> {
-		const { results } = await env.WEBSEARCH.search({
+		const { items } = await env.WEBSEARCH.search({
 			query: "Cloudflare Workers tutorials",
 			limit: 5,
 		});
 
 		return Response.json(
-			results.map((r) => ({
+			items.map((r) => ({
 				title: r.title,
 				url: r.url,
 				description: r.description,
@@ -51,14 +51,14 @@ Search for URLs, then use [Browser Run /json](/browser-run/quick-actions/json-en
 export default {
 	async fetch(request, env): Promise<Response> {
 		// 1. Search for relevant pages
-		const { results } = await env.WEBSEARCH.search({
+		const { items } = await env.WEBSEARCH.search({
 			query: "YC W25 batch companies",
 			limit: 5,
 		});
 
 		// 2. Extract structured data from each result using Browser Run /json
 		const extracted = await Promise.all(
-			results.map(async (r) => {
+			items.map(async (r) => {
 				const response = await env.BROWSER.quickAction("json", {
 					url: r.url,
 					prompt: "Extract company information",
@@ -95,13 +95,13 @@ Search for URLs, then fetch the full page content as markdown using [Browser Run
 ```ts
 export default {
 	async fetch(request, env): Promise<Response> {
-		const { results } = await env.WEBSEARCH.search({
+		const { items } = await env.WEBSEARCH.search({
 			query: "how to deploy Cloudflare Workers",
 			limit: 3,
 		});
 
 		const pages = await Promise.all(
-			results.map(async (r) => {
+			items.map(async (r) => {
 				const response = await env.BROWSER.quickAction("markdown", {
 					url: r.url,
 				});
@@ -126,13 +126,13 @@ Search for URLs, then fetch the rendered HTML using [Browser Run /content](/brow
 ```ts
 export default {
 	async fetch(request, env): Promise<Response> {
-		const { results } = await env.WEBSEARCH.search({
+		const { items } = await env.WEBSEARCH.search({
 			query: "Cloudflare status page",
 			limit: 3,
 		});
 
 		const pages = await Promise.all(
-			results.map(async (r) => {
+			items.map(async (r) => {
 				const response = await env.BROWSER.quickAction("content", {
 					url: r.url,
 				});

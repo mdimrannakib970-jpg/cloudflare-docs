@@ -50,8 +50,10 @@ Each result contains metadata about the page, not the page content itself:
 | `title` | The page title |
 | `description` | Page-level description (from the page's meta tags), if available |
 | `summary` | A summary of the page contents, if available |
-| `thumbnailUrl` | Preview image URL, if the page has an OpenGraph image |
+| `authors` | Author names associated with the page |
+| `imageUrl` | Preview image URL (OpenGraph or similar) |
 | `faviconUrl` | Favicon URL for the page's domain |
+| `lastModifiedDate` | When the page was last modified (ISO-8601) |
 
 This metadata is enough for an agent to assess relevance and decide which pages to fetch.
 

@@ -50,19 +50,19 @@ You need a [Cloudflare account](https://dash.cloudflare.com/sign-up) and a Worke
 	```ts
 	export default {
 		async fetch(request, env): Promise<Response> {
-			const { results, metadata } = await env.WEBSEARCH.search({
-				query: "latest news on Workers AI",
-				limit: 20,
-			});
+		const { items, metadata } = await env.WEBSEARCH.search({
+			query: "latest news on Workers AI",
+			limit: 20,
+		});
 
-			return Response.json({
-				results: results.map((r) => ({
-					title: r.title,
-					url: r.url,
-					description: r.description,
-				})),
-				metadata,
-			});
+		return Response.json({
+			results: items.map((r) => ({
+				title: r.title,
+				url: r.url,
+				description: r.description,
+			})),
+			metadata,
+		});
 		},
 	} satisfies ExportedHandler<Env>;
 	```
@@ -102,15 +102,16 @@ Your API token must have the **Web Search Read** permission. You can create one 
 | Parameter | Type | Required | Description |
 | --- | --- | --- | --- |
 | `query` | `string` | Yes | The search query. |
-| `limit` | `number` | No | Maximum number of results to return. Default `10`, max `20`. |
+| `limit` | `number` | No | Maximum number of results to return. Default `10`, max `50`. |
+| | | | Query max length: 1,024 characters. |
 
 ## Response
 
-The binding returns a `SearchResponse` object with results and metadata:
+The binding returns a `WebSearchResponse` object with items and metadata:
 
 ```json
 {
-  "results": [
+  "items": [
     {
       "url": "https://blog.cloudflare.com/workers-ai-update/",
       "title": "Workers AI Update - The Cloudflare Blog",
@@ -125,7 +126,7 @@ The binding returns a `SearchResponse` object with results and metadata:
 }
 ```
 
-The REST API wraps this in the standard Cloudflare v4 response envelope:
+The REST API wraps this in the standard Cloudflare v4 response envelope with snake_case field names:
 
 ```json
 {
@@ -133,7 +134,7 @@ The REST API wraps this in the standard Cloudflare v4 response envelope:
   "errors": [],
   "messages": [],
   "result": {
-    "results": [
+    "items": [
       {
         "url": "https://blog.cloudflare.com/workers-ai-update/",
         "title": "Workers AI Update - The Cloudflare Blog",
@@ -149,7 +150,7 @@ The REST API wraps this in the standard Cloudflare v4 response envelope:
 }
 ```
 
-Note: The binding uses camelCase (`requestId`, `latencyMs`) while the REST API uses snake_case (`request_id`, `latency_ms`).
+Note: The binding uses camelCase (`requestId`, `latencyMs`, `imageUrl`, `faviconUrl`, `lastModifiedDate`) while the REST API uses snake_case (`request_id`, `latency_ms`, `image_url`, `favicon_url`, `last_modified_date`).
 ```
 
 ### Result fields
@@ -160,8 +161,10 @@ Note: The binding uses camelCase (`requestId`, `latencyMs`) while the REST API u
 | `title` | `string` | Yes | The page title. |
 | `description` | `string` | No | Page-level description, usually from the page's meta description tag. |
 | `summary` | `string` | No | A summary of the page contents, if available. |
-| `thumbnailUrl` | `string` | No | Preview image URL, if the page has an OpenGraph image. |
-| `faviconUrl` | `string` | No | Favicon URL for the page's domain. |
+| `authors` | `string[]` | No | Author names associated with the page. |
+| `imageUrl` | `string` | No | Preview image URL (OpenGraph or similar). REST API: `image_url`. |
+| `faviconUrl` | `string` | No | Favicon URL for the page's domain. REST API: `favicon_url`. |
+| `lastModifiedDate` | `string` | No | ISO-8601 timestamp of when the page was last modified. REST API: `last_modified_date`. |
 
 ## Next steps
 
